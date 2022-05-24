@@ -12,6 +12,7 @@ Depends:
     pacman,
     R6,
     tidyverse,
+    magrittr,
     ggplot2,
     readr,
     reshape2,

@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // getChrScore_scored_k
 Rcpp::NumericVector getChrScore_scored_k(std::vector<std::string> kmers, std::vector<double> scores, std::string chrSeq, int kmerLen);
 RcppExport SEXP _fjComm_getChrScore_scored_k(SEXP kmersSEXP, SEXP scoresSEXP, SEXP chrSeqSEXP, SEXP kmerLenSEXP) {

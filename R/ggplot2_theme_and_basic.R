@@ -14,7 +14,7 @@ gg_theme_Publication <- function(base_size=9, base_family="Helvetica") {
             # panel.background = element_rect(colour = NA),
             # plot.background = element_rect(colour = NA),
             panel.background = element_rect(fill = "transparent",colour = NA),
-            plot.background = element_rect(fill = "transparent",colour = NA),
+            plot.background = element_rect(fill = "white",colour = NA),
             panel.border = element_rect(colour = NA),
             axis.title = element_text(size = rel(9/9)),
             axis.title.y = element_text( margin=unit(c(0.5,0.5,0.5,0.5), "mm") ),

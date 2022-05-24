@@ -289,8 +289,8 @@
 
 
 #
-  ggheat=function(m, rescaling='none', clustering='none', labCol=T, labRow=T, border=FALSE,
-                  heatscale= c(low='blue',high='red'))
+  ggheat<-function(m, rescaling='none', clustering='none', labCol=T, labRow=T, border=FALSE,
+                  heatscale= gg_steelblue_red)
   {
     ## m=matrix(data=sample(rnorm(100,mean=0,sd=2)), ncol=10)
     ## this function makes a graphically appealing heatmap (no dendrogram) using ggplot
@@ -351,11 +351,11 @@
       g2=g+geom_rect(aes(xmin=Var2-0.5,xmax=Var2+0.5,ymin=rowInd-1,ymax=rowInd, fill=value))
 
     ## add axis labels either supplied or from the colnames rownames of the matrix
-
-    # if(labCol==T)
-    #   g2=g2+scale_x_continuous(breaks=(1:cols)-0.5, labels=colnames(m))
-    # if(labCol==F)
-    #   g2=g2+scale_x_continuous(breaks=(1:cols)-0.5, labels=rep('',cols))
+    # browser()
+    if(labCol==T)
+      g2=g2+scale_x_continuous(breaks=(1:cols), labels=colnames(m),expand = c(0,0))
+    if(labCol==F)
+      g2=g2+scale_x_continuous(breaks=(1:cols), labels=rep('',cols),expand = c(0,0))
 
     if(labRow==T)
       g2=g2+scale_y_continuous(breaks=(1:rows)-0.5, labels=rownames(m),expand = c(0,0))
@@ -368,7 +368,7 @@
                 panel.background=element_rect(fill=NA, colour=NA))
 
     ## finally add the fill colour ramp of your choice (default is blue to red)-- and return
-    return(g2+scale_fill_continuous("", heatscale[1], heatscale[2]))
+    return(g2+scale_fill_continuous("", heatscale[1], heatscale[2])+theme(axis.line = element_blank()))
 
   }
 
