@@ -4,42 +4,73 @@
 
 # p_table <- ggplot_gtable(ggplot_build(p))
 
-gg_theme_Publication <- function(base_size=9, base_family="Helvetica") {
+# gg_theme_Publication <- function(base_size=9, base_family="Helvetica") {
+#   pacman::p_load(grid)
+#   pacman::p_load(ggthemes)
+#
+#   (theme_foundation(base_size=base_size, base_family=base_family)
+#     + theme(plot.title = element_text(size = rel(11/9), hjust = 0.5),
+#             text = element_text(),
+#             # panel.background = element_rect(colour = NA),
+#             # plot.background = element_rect(colour = NA),
+#             panel.background = element_rect(fill = "transparent",colour = NA),
+#             plot.background = element_rect(fill = "white",colour = NA),
+#             panel.border = element_rect(colour = NA),
+#             axis.title = element_text(size = rel(9/9)),
+#             axis.title.y = element_text( margin=unit(c(0.5,0.5,0.5,0.5), "mm") ),
+#             axis.title.x = element_text( margin=unit(c(0.5,0.5,0.5,0.5), "mm")),
+#             axis.text = element_text(size=rel(9/9)),
+#             axis.line = element_line(colour="black",size = 0.4),
+#             axis.ticks = element_line(size = 0.4),
+#             panel.grid.major = element_blank(), #element_line(colour="#f0f0f0"),
+#             panel.grid.minor = element_blank(),
+#             legend.key = element_rect(colour = NA),
+#             # legend.position = "bottom",
+#             # legend.direction = "horizontal",
+#             legend.key.size= unit(0.2, "cm"),
+#             legend.background = element_rect(fill = "transparent",colour = NA),
+#             legend.spacing = unit(0, "cm"),
+#             legend.title = element_text(face="italic",size=rel(9/9)),
+#             legend.text = element_text(size=rel(8/9)),
+#             plot.margin = unit(c(3,3,1.5,1.5),"mm"),
+#             strip.background=element_rect(colour="#f0f0f0",fill="#f0f0f0"),
+#             strip.text = element_text(size=rel(8/9)),
+#             # strip.background = element_blank(),
+#             legend.key.height=unit(8,"pt")
+#     ))
+#
+# }
+
+gg_theme_Publication<-function (base_size = 8, base_family = "Helvetica", line_width=0.352) #0.75pt line weight
+{
   pacman::p_load(grid)
   pacman::p_load(ggthemes)
-
-  (theme_foundation(base_size=base_size, base_family=base_family)
-    + theme(plot.title = element_text(size = rel(11/9), hjust = 0.5),
-            text = element_text(),
-            # panel.background = element_rect(colour = NA),
-            # plot.background = element_rect(colour = NA),
-            panel.background = element_rect(fill = "transparent",colour = NA),
-            plot.background = element_rect(fill = "white",colour = NA),
+  (theme_foundation(base_size = base_size, base_family = base_family) +
+      theme(plot.title = element_text(size = rel((base_size+1)/base_size), hjust = 0.5), ##
+            text = element_text(), ##
+            panel.background = element_rect(fill = "transparent", colour = NA),
+            plot.background = element_rect(fill = "white", colour = NA),
             panel.border = element_rect(colour = NA),
-            axis.title = element_text(size = rel(9/9)),
-            axis.title.y = element_text( margin=unit(c(0.5,0.5,0.5,0.5), "mm") ),
-            axis.title.x = element_text( margin=unit(c(0.5,0.5,0.5,0.5), "mm")),
-            axis.text = element_text(size=rel(9/9)),
-            axis.line = element_line(colour="black",size = 0.4),
-            axis.ticks = element_line(size = 0.4),
-            panel.grid.major = element_blank(), #element_line(colour="#f0f0f0"),
+            axis.title = element_text(size = rel(base_size/base_size)), ##
+            axis.title.y = element_text(margin = unit(c(0.5, 0.5, 0.5, 0.5), "mm")),
+            axis.title.x = element_text(margin = unit(c(0.5, 0.5, 0.5, 0.5), "mm")),
+            axis.text = element_text(size = rel((base_size-1)/base_size)), ##
+            axis.line = element_line(colour = "black", size = line_width), #--
+            axis.ticks = element_line(size = line_width), #--
+            panel.grid.major = element_blank(),
             panel.grid.minor = element_blank(),
             legend.key = element_rect(colour = NA),
-            # legend.position = "bottom",
-            # legend.direction = "horizontal",
-            legend.key.size= unit(0.2, "cm"),
-            legend.background = element_rect(fill = "transparent",colour = NA),
+            legend.key.size = unit(0.2, "cm"),
+            legend.background = element_rect(fill = "transparent", colour = NA),
             legend.spacing = unit(0, "cm"),
-            legend.title = element_text(face="italic",size=rel(9/9)),
-            legend.text = element_text(size=rel(8/9)),
-            plot.margin = unit(c(3,3,1.5,1.5),"mm"),
-            strip.background=element_rect(colour="#f0f0f0",fill="#f0f0f0"),
-            strip.text = element_text(size=rel(8/9)),
-            # strip.background = element_blank(),
-            legend.key.height=unit(8,"pt")
-    ))
-
+            legend.title = element_text(face = "italic", size = rel(base_size/base_size)), ##
+            legend.text = element_text(size = rel((base_size-1)/base_size)), ##
+            plot.margin = unit(c(3,3, 1.5, 1.5), "mm"),
+            strip.background = element_rect(colour = "#f0f0f0", fill = "#f0f0f0"),
+            strip.text = element_text(size = rel((base_size-1)/base_size)), ##
+            legend.key.height = unit(8, "pt")))
 }
+
 
 gg_theme_Publication_diag= gg_theme_Publication()+ theme(axis.line = element_blank(),axis.title.y = element_blank(),axis.ticks.y = element_blank(),axis.text.y = element_blank())
 gg_theme_bordered_diag= theme(panel.border = element_rect(size = 0.5,colour = "black"))
