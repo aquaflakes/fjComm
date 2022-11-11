@@ -324,3 +324,32 @@ pfm_from_seed <- function(seqs_or_file, seqs_or_file_bg=NA, seed1="AAA", gapLen=
     }
   }
 
+  # use biostrings to detect dimer consensus
+  dimer_enrichment<-function(seqs,direct=c("ht","hh","tt"),half_pattern="TTGAC",max_mismatch=1,gap=0:20,bk_use_lm_fit=TRUE,bk_sub=TRUE,bk_div=TRUE,bk_div_pseudo=100){
+    if(bk_sub) {shuffled_seqs= seqs %>% DNAStringSet() %>% shuffle_sequences()}
+    cnt_direction<-function(direct="hh")
+    {
+      patterns=case_when(
+        direct=="ht" ~ stringr::str_c(half_pattern,strrep("N",gap),half_pattern),
+        direct=="hh" ~ stringr::str_c(half_pattern,strrep("N",gap),half_pattern %>% revComp()),
+        direct=="tt" ~ stringr::str_c(half_pattern %>% revComp(),strrep("N",gap),half_pattern)
+      )
+      fg_cnt=vcountPDict(pdict = patterns %>% DNAStringSet(),subject = seqs %>% DNAStringSet(),fixed = "subject",max.mismatch = max_mismatch) %>% rowSums()
+      if(bk_sub){
+        bk_cnt=vcountPDict(pdict = patterns %>% DNAStringSet(),subject = shuffled_seqs, fixed = "subject",max.mismatch = max_mismatch) %>% rowSums()
+        if(bk_use_lm_fit){
+          bk_cnt=lm(y~x,tibble(y=bk_cnt,x=gap)) %>% predict()
+        }
+        fg_cnt=fg_cnt - bk_cnt
+      }
+      if(bk_div){
+        if(max_mismatch>1) {
+          # use consensus count to normalize
+          bk_cnt=vcountPDict(pdict = patterns %>% DNAStringSet(),subject = shuffled_seqs, fixed = "subject",max.mismatch = 0) %>% rowSums()
+        }
+        fg_cnt=fg_cnt/(bk_cnt+bk_div_pseudo)
+      }
+      fg_cnt
+    }
+    parallel(direct,function(x){cnt_direction(direct = x)},workers = 3) %>% set_names(direct)
+  }
