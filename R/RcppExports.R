@@ -17,7 +17,8 @@ fast_factor <- function(x) {
     .Call('_fjComm_fast_factor', PACKAGE = 'fjComm', x)
 }
 
-assign_k_to_PWMs <- function(kmers, motifs, motifNames, threshold = -1000) {
+# assign_k_to_PWMs <- function(kmers, motifs, motifNames, threshold = -1000) {
+assign_k_to_PWMs <- function(kmers, motifs, motifNames, threshold = 1000) {
     .Call('_fjComm_assign_k_to_PWMs', PACKAGE = 'fjComm', kmers, motifs, motifNames, threshold)
 }
 

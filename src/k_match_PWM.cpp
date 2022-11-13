@@ -94,7 +94,8 @@ inline void scoring_k_with_PWM(std::string &kmer, NumericMatrix& currMotif, doub
         for (int kpos=0; kpos< kmer.length(); kpos++)
           scoreCurrPos+= currMotif(findRow(kmer[kpos]),pos+kpos);
           // cout<< currMotifName <<"  "<< kmer[kpos] <<"  "<< currMotif(findRow(kmer[kpos]),pos+kpos) <<"\n";
-        if (scoreCurrPos > MaxScore && scoreCurrPos > threshold)
+        // >>> original <<< if (scoreCurrPos > MaxScore && scoreCurrPos > threshold)
+        if (scoreCurrPos < MaxScore && scoreCurrPos < threshold)
           {
             MaxScore= scoreCurrPos;
             MotifName= currMotifName;
@@ -103,8 +104,9 @@ inline void scoring_k_with_PWM(std::string &kmer, NumericMatrix& currMotif, doub
   }
 
 // [[Rcpp::export]]
-SEXP assign_k_to_PWMs(std::vector<std::string> kmers, Rcpp::List motifs, std::vector<std::string> motifNames, double threshold= -1000)
+SEXP assign_k_to_PWMs(std::vector<std::string> kmers, Rcpp::List motifs, std::vector<std::string> motifNames, double threshold= 1000)
 {
+  // >>> original threshold <<< -1000
   size_t kmerNo= kmers.size();
   vector<string> motif(kmerNo);
   vector<double> scores(kmerNo);
@@ -113,7 +115,7 @@ SEXP assign_k_to_PWMs(std::vector<std::string> kmers, Rcpp::List motifs, std::ve
   {
     string kmer= kmers[k]; string kmerRc= revComp(kmers[k]);
     string MotifName= "NA";
-    double MaxScore= -100000000;
+    double MaxScore= 100000000; //start with high energy   >>> original <<< -100000000
     for (size_t i = 0; i < motifs.size(); i++)
     {
       NumericMatrix currMotif= as<NumericMatrix>(motifs[i]);
