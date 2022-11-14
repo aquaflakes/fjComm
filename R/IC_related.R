@@ -101,7 +101,7 @@ ic_related_calc <- function (seqs=character(0), kmerLen=2L, filter_for_spacing=T
                              maxBias_dimer_Params=list(type="topMI",topNo=5L) ) # "foldchn", "topMI", "freq"
 {
   setDTthreads(threads = 1)
-  if(length(type)>1 || (!(type %in% c("MI","maxBias","dimer","RNA","direct_maxBias"))) ) stop("ic_related_calc: please specify type of calc!!!")
+  if(length(type)>1 || (!(type %in% c("MI","maxBias","dimer","RNA_rc","rep","direct_maxBias"))) ) stop("ic_related_calc: please specify type of calc!!!")
   pacman::p_load(entropy)
   seqMat= seqFregments(seqs,k=kmerLen)
 
