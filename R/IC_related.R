@@ -97,7 +97,7 @@ ic_get_2vect_cnt_table <- function(V1,V2,pseudo)
     }
 
     # if filter for spacing is T, only cols with the specified "spacing" is retained, spacing = 0 for neighbouring kmers
-ic_related_calc <- function (seqs=character(0), kmerLen=2L, filter_for_spacing=TRUE, spacing=c(0L,1L,2L,3L), verbose=F, pseudo=10L, type=c("MI","maxBias","dimer","RNA","direct_maxBias"),
+ic_related_calc <- function (seqs=character(0), kmerLen=2L, filter_for_spacing=TRUE, spacing=c(0L,1L,2L,3L), verbose=F, pseudo=10L, type=c("MI","maxBias","dimer","RNA_rc","rep","direct_maxBias"),
                              maxBias_dimer_Params=list(type="topMI",topNo=5L) ) # "foldchn", "topMI", "freq"
 {
   setDTthreads(threads = 1)
@@ -169,13 +169,26 @@ ic_related_calc <- function (seqs=character(0), kmerLen=2L, filter_for_spacing=T
     return(resultDf)
   }
 
-  if (type=="RNA")
+  if (type=="RNA_rc")
   {
     dimerRows= NULL
     calcResult= apply(resultDf,1,function(x){   # calc pair-wise
       if(verbose) { cat(paste0(x[1],"-",x[2],"  "))}
       updateProgressBar(pb)
       maxBiascalc_elemental(seqMat, x[1],x[2], topNo = maxBias_dimer_Params$topNo, pseudo = pseudo, type = maxBias_dimer_Params$type, dimer=TRUE, head_to_tail =FALSE ,head_to_head =TRUE )
+    })
+    calcResult=recoverDf_from_return_list(calcResult)
+    resultDf= cbind(resultDf,calcResult)
+    return(resultDf)
+  }
+
+  if (type=="rep")
+  {
+    dimerRows= NULL
+    calcResult= apply(resultDf,1,function(x){   # calc pair-wise
+      if(verbose) { cat(paste0(x[1],"-",x[2],"  "))}
+      updateProgressBar(pb)
+      maxBiascalc_elemental(seqMat, x[1],x[2], topNo = maxBias_dimer_Params$topNo, pseudo = pseudo, type = maxBias_dimer_Params$type, dimer=TRUE, head_to_tail =TRUE ,head_to_head =FALSE )
     })
     calcResult=recoverDf_from_return_list(calcResult)
     resultDf= cbind(resultDf,calcResult)
