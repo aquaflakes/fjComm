@@ -11,7 +11,7 @@ gg_distMDS_2Dplot <- function(distMat, labels=NULL, color="black", fig_anno="", 
 }
 
 
-gg_PCA_2Dplot_<-function(Mat, labels=NULL, color="black", fig_anno="", textsize=3, textalpha=0.5, pointsize=2,pointalpha=1)
+gg_PCA_2Dplot<-function(Mat, labels=NULL, color="black", fig_anno="", textsize=3, textalpha=0.5, pointsize=2,pointalpha=1)
 {
   # visualize PCA dim1,2 with 2D xyplot
   # if(is.null(labels))labels=rownames(distMat)
