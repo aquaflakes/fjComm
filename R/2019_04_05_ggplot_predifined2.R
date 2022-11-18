@@ -11,14 +11,16 @@ gg_distMDS_2Dplot <- function(distMat, labels=NULL, color="black", fig_anno="", 
 }
 
 
-gg_PCA_2Dplot <- function(Mat, labels=NULL, color="black", fig_anno="", textsize=3, textalpha=0.5, pointsize=2,pointalpha=1)
+gg_PCA_2Dplot_<-function(Mat, labels=NULL, color="black", fig_anno="", textsize=3, textalpha=0.5, pointsize=2,pointalpha=1)
 {
   # visualize PCA dim1,2 with 2D xyplot
   # if(is.null(labels))labels=rownames(distMat)
   p_load(ggrepel,FactoMineR)
   pca = PCA(Mat, graph = F,ncp = 5)
   pcaplot2=pca$ind$coord %>% as.data.frame() #%>%  mutate(text=labels,color=color)
-  p=ggplot(pcaplot2)+geom_point(aes(x=Dim.1, y=Dim.2,color=I(color)),size=pointsize,alpha=pointalpha) +xlab("")+ylab("")+gg_anno_grob(x = 0.1,fig_anno)+ coord_fixed(ratio = 1)
+  pca_eig <- pca$eig %>% round() %>% as.data.frame()
+  p=ggplot(pcaplot2)+geom_point(aes(x=Dim.1, y=Dim.2,color=I(color)),size=pointsize
+                                ,alpha=pointalpha) +xlab(paste0("PC1 (", pca_eig$`percentage of variance`[1], "%)"))+ylab(paste0("PC2 (", pca_eig$`percentage of variance`[2], "%)"))+gg_anno_grob(x = 0.1,fig_anno)+ coord_fixed(ratio = 1)
   if(!is.null(labels)) p=p+geom_text_repel(aes(x=Dim.1,y=Dim.2,label=labels,color=I(color)),size=textsize,alpha=textalpha)
   p
 }
