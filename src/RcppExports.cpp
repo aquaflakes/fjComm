@@ -159,6 +159,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// countKmers
+Rcpp::NumericVector countKmers(std::vector< std::string > strings, NumericVector score_val, std::vector< std::string > kmer_names, int k, int winsize);
+RcppExport SEXP _fjComm_countKmers(SEXP stringsSEXP, SEXP score_valSEXP, SEXP kmer_namesSEXP, SEXP kSEXP, SEXP winsizeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector< std::string > >::type strings(stringsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type score_val(score_valSEXP);
+    Rcpp::traits::input_parameter< std::vector< std::string > >::type kmer_names(kmer_namesSEXP);
+    Rcpp::traits::input_parameter< int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< int >::type winsize(winsizeSEXP);
+    rcpp_result_gen = Rcpp::wrap(countKmers(strings, score_val, kmer_names, k, winsize));
+    return rcpp_result_gen;
+END_RCPP
+}
 // matRevComp
 NumericMatrix matRevComp(NumericMatrix seqs);
 RcppExport SEXP _fjComm_matRevComp(SEXP seqsSEXP) {
@@ -211,6 +226,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_fjComm_kmerCntBit", (DL_FUNC) &_fjComm_kmerCntBit, 7},
     {"_fjComm_gkmerCntBit", (DL_FUNC) &_fjComm_gkmerCntBit, 9},
     {"_fjComm_scoring", (DL_FUNC) &_fjComm_scoring, 9},
+    {"_fjComm_countKmers", (DL_FUNC) &_fjComm_countKmers, 5},
     {"_fjComm_matRevComp", (DL_FUNC) &_fjComm_matRevComp, 1},
     {"_fjComm_pfm_from_seed_notUsed", (DL_FUNC) &_fjComm_pfm_from_seed_notUsed, 7},
     {"_fjComm_seqFregments", (DL_FUNC) &_fjComm_seqFregments, 2},

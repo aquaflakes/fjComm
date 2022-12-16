@@ -14,6 +14,7 @@
 using namespace Rcpp;
 using namespace std;
 
+// score across a single sequence, each kmer with custom score
 // [[Rcpp::export]]
 Rcpp::NumericVector getChrScore_scored_k( std::vector<std::string> kmers, std::vector<double> scores, std::string chrSeq, int kmerLen)
 {
@@ -37,7 +38,7 @@ Rcpp::NumericVector getChrScore_scored_k( std::vector<std::string> kmers, std::v
   return wrap(score);
 }
 
-
+// score across a single sequence, each kmer with score 1
 // [[Rcpp::export]]
 Rcpp::IntegerVector getChrScore(std::vector< std::string > topKmers, std::string chrSeq)
 {
@@ -55,8 +56,6 @@ Rcpp::IntegerVector getChrScore(std::vector< std::string > topKmers, std::string
 
   return wrap(score);
 }
-
-
 
 
 /*** R

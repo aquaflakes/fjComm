@@ -17,7 +17,6 @@ fast_factor <- function(x) {
     .Call('_fjComm_fast_factor', PACKAGE = 'fjComm', x)
 }
 
-# assign_k_to_PWMs <- function(kmers, motifs, motifNames, threshold = -1000) {
 assign_k_to_PWMs <- function(kmers, motifs, motifNames, threshold = 1000) {
     .Call('_fjComm_assign_k_to_PWMs', PACKAGE = 'fjComm', kmers, motifs, motifNames, threshold)
 }
@@ -40,6 +39,10 @@ gkmerCntBit <- function(strings, gapNo = 3L, k = 2L, gapMins = as.integer( c(2,3
 
 scoring <- function(strings, scoreCube, gapNo = 3L, k = 2L, gapMins = as.integer( c(2,3,0)), gapMaxs = as.integer( c(3,4,0)), pseudo = 0L, diffLen = FALSE, posInfo = TRUE) {
     .Call('_fjComm_scoring', PACKAGE = 'fjComm', strings, scoreCube, gapNo, k, gapMins, gapMaxs, pseudo, diffLen, posInfo)
+}
+
+countKmers <- function(strings, score_val, kmer_names, k = 10L, winsize = 50L) {
+    .Call('_fjComm_countKmers', PACKAGE = 'fjComm', strings, score_val, kmer_names, k, winsize)
 }
 
 matRevComp <- function(seqs) {
