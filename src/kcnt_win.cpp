@@ -11,7 +11,7 @@ using namespace std;
 
 // score across a stringset, each kmer with a custom score
 // [[Rcpp::export]]
-Rcpp::NumericVector countKmers(std::vector< std::string > strings, NumericVector score_val, std::vector< std::string > kmer_names, int k=10, int winsize=50)
+Rcpp::NumericVector getChrScores_scored_k(std::vector< std::string > strings, NumericVector score_val, std::vector< std::string > kmer_names, int k=10, int winsize=50)
 {
   std::map<std::string, int> score;
   int n1 = score_val.size();

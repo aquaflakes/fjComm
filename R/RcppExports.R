@@ -41,8 +41,8 @@ scoring <- function(strings, scoreCube, gapNo = 3L, k = 2L, gapMins = as.integer
     .Call('_fjComm_scoring', PACKAGE = 'fjComm', strings, scoreCube, gapNo, k, gapMins, gapMaxs, pseudo, diffLen, posInfo)
 }
 
-countKmers <- function(strings, score_val, kmer_names, k = 10L, winsize = 50L) {
-    .Call('_fjComm_countKmers', PACKAGE = 'fjComm', strings, score_val, kmer_names, k, winsize)
+getChrScores_scored_k <- function(strings, score_val, kmer_names, k = 10L, winsize = 50L) {
+    .Call('_fjComm_getChrScores_scored_k', PACKAGE = 'fjComm', strings, score_val, kmer_names, k, winsize)
 }
 
 matRevComp <- function(seqs) {
