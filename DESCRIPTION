@@ -9,6 +9,7 @@ Description: One paragraph description of what the package does as one or more f
 License: GPL (>= 2)
 Depends:
     data.table,
+    glue, plotly,
     pacman,
     R6,
     tidyverse,
@@ -16,10 +17,9 @@ Depends:
     ggplot2,
     readr,
     reshape2,
-    dplyr,
     stringr,
     matrixStats, ggseqlogo,
-    GenomicRanges, Biostrings, motifmatchr, universalmotif, TFBSTools, glue, plotly
+    dplyr, Biostrings, motifmatchr, universalmotif, TFBSTools, GenomicRanges
 Imports:
     Rcpp,BiocManager,
     BSgenome,
