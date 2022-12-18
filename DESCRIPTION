@@ -18,17 +18,15 @@ Depends:
     reshape2,
     dplyr,
     stringr,
-    matrixStats, ggseqlogo
+    matrixStats, ggseqlogo,
+    GenomicRanges, Biostrings, motifmatchr, universalmotif, TFBSTools, glue, plotly
 Imports:
     Rcpp,BiocManager,
-    ggplot2,reshape2,dplyr,data.table,readr,ggseqlogo,
     BSgenome,
     GenomeInfoDb,
-    GenomicRanges,RcppArmadillo,
-    stringr,
+    RcppArmadillo,
     entropy,
     gtools,motifStack,
-    BiocParallel,
-    plotly
+    BiocParallel
 LinkingTo: Rcpp,RcppArmadillo
 RoxygenNote: 7.1.1
