@@ -39,10 +39,11 @@
                            rndSuffix= paste(sample(letters,40,replace = T),collapse = "")
                            tmpFileName= paste0("~/_tmp/tmp_", ifelse(is.character(self$file),basename(self$file),tempfile() %>% basename()),"_",rndSuffix,".fa")
                            tmpOutFile=paste0(tmpFileName,"_o")
+                           if(class(pwmFile)[1]!="character"){isMatrix=T}
                               if(isMatrix){tmppwmFile=paste0("~/_tmp/pwm_",tempfile() %>% basename(),".pfm"); write_tsv(as.data.frame(pwmFile),tmppwmFile,col_names = F); pwmFile=tmppwmFile}
 
                            Biostrings::writeXStringSet(self$seq, filepath = tmpFileName, format="fasta") #mapping
-                           cmd=paste(sep =" ", "moods_dna.py -m ",paste(pwmFile,collapse = " ")," -s ",tmpFileName, " -p ",p, ifelse(batch," --batch "," "), "-o", tmpOutFile)
+                           cmd=paste(sep =" ", "/wrk/zhu/anaconda3/bin/moods-dna.py -m ",paste(pwmFile,collapse = " ")," -s ",tmpFileName, " -p ",p, ifelse(batch," --batch "," "), "-o", tmpOutFile)
                            system(cmd)
                            self$moodsResult=readr::read_csv(tmpOutFile, col_names = F) %>% dplyr::rename(rangeNo=X1,pfmFile=X2,pos=X3,strand=X4,score=X5,match=X6) #%>% select(-X7)
 

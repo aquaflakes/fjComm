@@ -310,8 +310,8 @@ pfm_from_seed <- function(seqs_or_file, seqs_or_file_bg=NA, seed1="AAA", gapLen=
     # returnRaw: true to return raw result, false to return counts by position
     # if hope to distinguish monomer form dimer, set bindingPerLig=TRUE
     selex=SELEXFile("tt");
-    selex$seq=reads %>% Biostrings::DNAStringSet() %>% set_names(1:length(reads))
-    selex$moodsMap(pwmFile =pfm, batch = batch, p = pval )
+    selex$seq=reads %>% Biostrings::DNAStringSet() %>% magrittr::set_names(1:length(reads))
+    selex$moodsMap(pwmFile =pfm, batch = batch, p = pval)
 
     moods=selex$moodsResult
     if(returnRaw) return(moods)
@@ -363,4 +363,31 @@ pfm_from_seed <- function(seqs_or_file, seqs_or_file_bg=NA, seed1="AAA", gapLen=
       fg_cnt
     }
     parallel(direct,function(x){cnt_direction(direct = x)},workers = 3) %>% set_names(direct) %>% largeListToDf() %>% mutate(gap=gap)
+  }
+
+
+
+  get_pfm_hitseqs<-function(seqs, pfm_mat, pval=1e-4, flankAdd=20, one_hit_only=FALSE){
+    # match all sequences to find pfm hits, and get hit sequence with flankings of {flankAdd} bp
+    adj_lens=(nchar(seqs) %>% max)+2*flankAdd
+    seqs_adj=fjComm::length_adjust(seqs, output_length = adj_lens, seq_in_middle = T,use_rand_for_N = T)
+    motif_hits=fjComm::moodsMap(seqs_adj,pfm_mat,T,pval = pval) %>% dplyr::filter(pos>=flankAdd & pos<(adj_lens-flankAdd-ncol(pfm_mat)))
+    if(one_hit_only){duplicated_No=motif_hits$rangeNo %>% {.[duplicated(.)]}; motif_hits %<>% dplyr::filter(!(rangeNo %in% duplicated_No))}
+    starts=motif_hits$pos-flankAdd+1
+    ends=motif_hits$pos+flankAdd+ncol(pfm_mat)
+    hitseqs=str_sub(seqs_adj[motif_hits$rangeNo],starts,ends)
+    hitseqs=ifelse(motif_hits$strand=="+",hitseqs,fjComm::revComp(hitseqs))
+    motif_hits %>% mutate(hitseqs=hitseqs)
+  }
+
+
+
+  pfm_from_aligned_seqs<-function(hitseqs,pseudo=0){
+    positions=hitseqs[1] %>% nchar
+    hitseqs %<>% str_replace_all("N",stringi::stri_rand_strings(1,1,"[ACGT]"))
+    hit_pfm=matrix(pseudo,nrow = 4,ncol = positions)
+    for (i in 1:ncol(hit_pfm)){
+      hit_pfm[,i]=str_sub(hitseqs,i,i) %>% table()
+    }
+    hit_pfm %>% replace(is.na(.),pseudo)
   }
