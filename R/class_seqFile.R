@@ -32,7 +32,6 @@
                         # mapping using moods cmd
                         moodsMap = function(pwmFile=c("test/*.{pfm,adm}","*.pfm"), p="0.0001", batch= TRUE,isMatrix=F) {
                            # -m example-data/matrices/*.{pfm,adm} -s example-data/seq/chr1-5k-55k.fa -p 0.0001  # -m can follow multiple files
-
                            if (!is.character(p)) p=as.character(p)#stop("p= character, not number!")
                            if (is.null(self$seq)) stop("getSeq first")
                            system("mkdir -p ~/_tmp")
@@ -40,7 +39,13 @@
                            tmpFileName= paste0("~/_tmp/tmp_", ifelse(is.character(self$file),basename(self$file),tempfile() %>% basename()),"_",rndSuffix,".fa")
                            tmpOutFile=paste0(tmpFileName,"_o")
                            if(class(pwmFile)[1]!="character"){isMatrix=T}
-                              if(isMatrix){tmppwmFile=paste0("~/_tmp/pwm_",tempfile() %>% basename(),".pfm"); write_tsv(as.data.frame(pwmFile),tmppwmFile,col_names = F); pwmFile=tmppwmFile}
+                              if(isMatrix){
+                                  if(class(pwmFile)[1]=="list"){
+                                    pwmFile=.save_tmp_pfmlist(pwmFile)
+                                  } else {
+                                    tmppwmFile=paste0("~/_tmp/pwm_",tempfile() %>% basename(),".pfm"); write_tsv(as.data.frame(pwmFile),tmppwmFile,col_names = F); pwmFile=tmppwmFile
+                                  }
+                                }
 
                            Biostrings::writeXStringSet(self$seq, filepath = tmpFileName, format="fasta") #mapping
                            cmd=paste(sep =" ", "/wrk/zhu/anaconda3/bin/moods-dna.py -m ",paste(pwmFile,collapse = " ")," -s ",tmpFileName, " -p ",p, ifelse(batch," --batch "," "), "-o", tmpOutFile)
@@ -48,7 +53,13 @@
                            self$moodsResult=readr::read_csv(tmpOutFile, col_names = F) %>% dplyr::rename(rangeNo=X1,pfmFile=X2,pos=X3,strand=X4,score=X5,match=X6) #%>% select(-X7)
 
                            system(paste(sep =" ", "rm",tmpFileName,tmpOutFile))
-                              if(isMatrix){system(paste(sep =" ", "rm",tmppwmFile))}
+                              if(isMatrix){
+                                if(length(pwmFile)>1){
+                                  system(glue::glue("rm -r {dirname(pwmFile[1])}"))
+                                }else{
+                                  system(paste(sep =" ", "rm",tmppwmFile))
+                                }
+                              }
                         },
 
                         getPfmFiles = function(guidefiles, TFname_full=self$TF, monomericFirst=TRUE, exactMatchFirst=TRUE, head=20)

@@ -387,7 +387,14 @@ pfm_from_seed <- function(seqs_or_file, seqs_or_file_bg=NA, seed1="AAA", gapLen=
     hitseqs %<>% str_replace_all("N",stringi::stri_rand_strings(1,1,"[ACGT]"))
     hit_pfm=matrix(pseudo,nrow = 4,ncol = positions)
     for (i in 1:ncol(hit_pfm)){
-      hit_pfm[,i]=str_sub(hitseqs,i,i) %>% table()
+      hit_pfm[,i]=str_sub(hitseqs,i,i) %>% table() %>% .[qw("A C G T")]
     }
     hit_pfm %>% replace(is.na(.),pseudo)
+  }
+
+  .save_tmp_pfmlist<-function(pfmlist,names_=names(pfmlist)){
+    if(is.null(names_)) {names_=seq_along(pfmlist)}
+    tmp_dir=tempfile(); system(glue::glue("mkdir -p {tmp_dir}"))
+    filenames_=map2(pfmlist,names_,function(pfm,name_){filename_=glue::glue("{tmp_dir}/{name_}.pfm"); write_tsv(as.data.frame(pfm),filename_,col_names = F); filename_})
+    filenames_ %>% unlist()
   }
