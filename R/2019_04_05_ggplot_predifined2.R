@@ -76,5 +76,5 @@ gg_multi_ggoutput<-function(plotlist,ncol=1,col_to_row=FALSE,magnify=100)
 complexheatmap_template=function(){cat("color_= circlize::colorRamp2(breaks = seq(-2,6,0.1), colors = colorspace::diverge_hcl(120,palette = 'Blue-Red3',rev = F)[40:120])
 ComplexHeatmap::Heatmap(enrich_all,col = color_, cluster_rows = T, show_row_dend = F,cluster_columns = F,column_labels =ChIP_files$Symbol_Name[1:8], row_labels = all_motif_names,
     row_names_gp = gpar(fontsize=7),column_names_gp = gpar(fontsize=8),heatmap_legend_param =list(title = 'Log2 enrichment', at = c(-2, 0, 2,4,6),
-    title_gp=gpar(fontsize=8),labels_gp=gpar(fontsize=7)))")}
+    title_gp=gpar(fontsize=8),labels_gp=gpar(fontsize=7),grid_width = unit(3, 'mm') ))")}
 

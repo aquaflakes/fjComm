@@ -1,6 +1,7 @@
 parallel <- function(list_or_vect= 1:10, fun= function(x){x}, workers=15, ...)
 {
   pacman::p_load(BiocParallel)
+  options(warn = 0)
   curr_workers= workers
     max_workers=parallel::detectCores()-2
     if (curr_workers>max_workers) curr_workers=max_workers
@@ -18,6 +19,7 @@ parallel_cmd_gen<-function(cmd="samtools view -c {}",params=c("file1","file2","f
 
 mclapply<-function(params,FUN,mc.cores=2,loopMax=10,curr_loop=1,...){
   # robust parall lapply, will try multiple times
+  options(warn = 0)
   print("mclapply loop: {curr_loop}" %>% glue::glue())
   result=parallel::mclapply(params,FUN,mc.cores = mc.cores,...)
   if(curr_loop>=loopMax) {return(result)} else {curr_loop=curr_loop+1}
