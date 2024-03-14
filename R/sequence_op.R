@@ -252,4 +252,51 @@ gkmerCntBit_file<-function(file, gapNo=2, k=2, gapMins = c(0,0), gapMaxs = c(3,3
 }
 
 
+kmerCntBit_rc<-function(strings, k = 2L, diffLen = FALSE, collapse = FALSE, asDf = TRUE, all_possible_k = FALSE, pseudo = 0L, rmdup=FALSE, rc_combine=FALSE, rc_k_uniq=FALSE) {
+  if (rc_k_uniq) rc_combine=TRUE
+  if (rc_combine) collapse=TRUE
+
+  if(rmdup) strings=rmdup(strings %>% as.data.frame(),1)[[1]]
+  result=.Call('_fjComm_kmerCntBit', PACKAGE = 'fjComm', strings, k, diffLen, collapse, asDf, all_possible_k, pseudo)
+
+  # combine rc kmer counts
+  if(rc_combine)  {
+    rc_result= result %>% mutate(kmer=revComp(kmer))
+    result %<>% mutate(counts= counts + rc_result[match(kmer, rc_result$kmer),]$counts)
+    rm(rc_result)
+    # keep only 1 of the 2 rev comp kmers
+    if(rc_k_uniq)  {
+      dupped= fw_rev_dedup(result$kmer,result$gap,return_Boolean = T)
+      result %<>% dplyr::filter(!dupped)
+    }
+  }
+  result
+}
+
+gkmerCntBit_rc<-function(strings, gapNo=2, k=2, gapMins = c(0,0), gapMaxs = c(3,3), pseudo=5, diffLen=FALSE, posInfo=FALSE, all_possible_k=TRUE, rmdup=FALSE, melt_result=FALSE, rc_combine=FALSE, rc_k_uniq=FALSE)
+{
+  # required logic relationship
+  if (rc_k_uniq) rc_combine=TRUE
+  if (rc_combine) melt_result=TRUE
+
+  if(rmdup) strings=rmdup(strings %>% as.data.frame(),1)[[1]]
+  result=gkmerCntBit(strings, gapNo=gapNo, k=k, gapMins = gapMins, gapMaxs = gapMaxs, pseudo=pseudo, diffLen=diffLen, posInfo=posInfo, all_possible_k=all_possible_k)
+  if(melt_result) result=reshape2::melt(result) %>% set_colnames(c("kmer","gap","counts")) %>% mutate_if(is.factor,as.character)
+
+  # combine rc kmer counts
+  if(rc_combine)
+  {
+    rc_result= result %>% mutate(kmer=revComp(kmer))
+    result %<>% mutate(counts= counts + rc_result[match(paste0(kmer,gap),paste0(rc_result$kmer,rc_result$gap)),]$counts)
+    rm(rc_result)
+    # keep only 1 of the 2 rev comp kmers
+    if(rc_k_uniq)
+    {
+      dupped= fw_rev_dedup(result$kmer,result$gap,return_Boolean = T)
+      result %<>% dplyr::filter(!dupped)
+    }
+  }
+  result
+}
+
 
