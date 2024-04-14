@@ -78,3 +78,36 @@ ComplexHeatmap::Heatmap(enrich_all,col = color_, cluster_rows = T, show_row_dend
     row_names_gp = gpar(fontsize=7),column_names_gp = gpar(fontsize=8),heatmap_legend_param =list(title = 'Log2 enrichment', at = c(-2, 0, 2,4,6),
     title_gp=gpar(fontsize=8),labels_gp=gpar(fontsize=7),grid_width = unit(3, 'mm') ))")}
 
+dingkun_TF_logo <- function(pwmlist){
+  pwmlist %<>% universalmotif::convert_motifs(class = "TFBSTools-PWMatrix")
+  #'@ pwmlist  PWMatrixList
+  motif_pics=BiocParallel::bplapply(1:length(pwmlist),
+                                    function(x){
+                                      t_pwmlist <- universalmotif::convert_motifs(pwmlist[[x]])
+                                      motif_pic=suppressMessages(universalmotif::view_motifs(t_pwmlist,show.positions = F)+
+                                                                   ylab("")+scale_y_continuous() +
+                                                                   theme(axis.ticks.y =element_blank(),axis.line.y = element_blank(),axis.text.y = element_blank())  )
+                                      ggplotGrob(motif_pic)
+                                    },BPPARAM = BiocParallel::MulticoreParam(workers = 30))
+  blank_plot <- ggplot() +
+    theme_void()+
+    xlim(0, 3) +
+    ylim(0, 55)#)#+xlim(0,2)
+
+  anno_plots <- c()
+  anno_texts <- c()
+  for (i in 1:length(pwmlist)) {
+    cmd <- glue("annotation_custom(motif_pics[[{i}]],xmin =1,xmax={1+
+                length(pwmlist[[i]]@profileMatrix[1,])*0.1},ymin={55-i},ymax={55-(i-1.5)})")
+    cmd2 <- glue("annotate('text', x = 0.7, y = {55-(i-1.5)-0.5}, label = '{pwmlist[[i]]@name}',size = 4)")
+    anno_plots <- append(anno_plots,cmd)
+    anno_texts <- append(anno_texts,cmd2)
+  }
+  anno_plots %<>% paste0(collapse = "+")
+  anno_texts %<>% paste0(collapse = "+")
+  plot_text=paste0("blank_plot+ ",anno_plots,"+",anno_texts)
+  plot_1 <- eval(parse(text = plot_text))
+  plot_1
+}
+
+
