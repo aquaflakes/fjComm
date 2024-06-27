@@ -299,16 +299,17 @@ gkmerCntBit_rc<-function(strings, gapNo=2, k=2, gapMins = c(0,0), gapMaxs = c(3,
   result
 }
 
-gkmer_enrich<-function(seqs,len=8,gapMax=5)
+gkmer_enrich<-function(seqs,len=8,gapMax=5,counts_only=FALSE)
 {
   # calc background-corrected enrichment of gapped kmers
   w63=seqs
   w63k=fjComm::gkmerCntBit_rc(w63,gapNo = 1,gapMins = 0,gapMaxs = gapMax,k = len/2,
                               diffLen = T,posInfo = F,all_possible_k = T,pseudo = 5,rc_combine = T)
-
-  w63s=universalmotif::shuffle_sequences(w63 %>% DNAStringSet()) %>% as.character()
-  w63sk=fjComm::gkmerCntBit_rc(w63s,gapNo = 1,gapMins = 0,gapMaxs = gapMax,k = len/2,
+  if(!counts_only)
+  {
+    w63s=universalmotif::shuffle_sequences(w63 %>% DNAStringSet()) %>% as.character()
+    w63sk=fjComm::gkmerCntBit_rc(w63s,gapNo = 1,gapMins = 0,gapMaxs = gapMax,k = len/2,
                                diffLen = T,posInfo = F,all_possible_k = T,pseudo = 5,rc_combine = T)
-  w63e=w63k %>% mutate(counts=counts/w63sk$counts)
-  w63e
+    w63k %>% mutate(counts=counts/w63sk$counts)
+  }else{w63k}
 }

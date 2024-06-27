@@ -110,4 +110,15 @@ dingkun_TF_logo <- function(pwmlist){
   plot_1
 }
 
+bin_point_density_to_alpha<-function(in_vect){
+  # when drawing hex or bin geom, map the density of each bin to alpha, in order to simulate dot plot
+  # lowest 4 values to different alpha, others to alpha=1
+  ### example ###   ggplot() + geom_hex(aes(x,y,fill=I(bin_point_density_to_alpha(..density..))))
+  vals=table(in_vect) %>% sort(decreasing = T) %>% names() %>% as.numeric(); vals=vals*1.1
+  case_when(in_vect<vals[1] ~ 0.3,
+            in_vect>vals[1]&in_vect<vals[2] ~ 0.5,
+            in_vect>vals[2]&in_vect<vals[3] ~ 0.6,
+            in_vect>vals[3]&in_vect<vals[4] ~ 0.8,
+            .default = 1)
+}
 
