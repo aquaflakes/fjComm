@@ -58,7 +58,7 @@ motif_plot_moods_singlePWM_hit <- function(readsfile, pfmfile, dup_rm=TRUE, p_mo
 #   return(plot+xlab("position (bp)")+scale_x_continuous(expand = c(0, 0),breaks =  gg_axis_breaks(selex$moodsResult$pos,interval = 20)))
 # }
 
-### motifStack related ####
+#### motifStack related ###
     plotMotif_pfmFile <-function(pfm_file,ic.scale=FALSE,title=NULL,full_path_on_fig=FALSE,TFname=NULL)
     {
       suppressPackageStartupMessages(library(motifStack))
@@ -122,7 +122,7 @@ motif_plot_moods_singlePWM_hit <- function(readsfile, pfmfile, dup_rm=TRUE, p_mo
     }
 
 
-### motif from raw reads using seed ######
+#### motif from raw reads using seed ###
       # element fun for 1 file
       pfm_from_seed_element <- function(seqs, seed1="AAA", gapLen=1, two_strands=TRUE, seed2="", flankLen=4,     all_start_with_specified_gap=T, seed1_start= c(2,3,4),     rmdup=TRUE,  ns_estimate=FALSE)
       {
@@ -191,7 +191,7 @@ pfm_from_seed <- function(seqs_or_file, seqs_or_file_bg=NA, seed1="AAA", gapLen=
 
 
 
-#### scoring kmerVect with pfm or pwm matrix ##########
+#### scoring kmerVect with pfm or pwm matrix ###
 
   kmer_pfm_score <- function(kmerVect,pfmMat,normalize=TRUE)
     # calc freq for each kmer acc to pfm
@@ -227,31 +227,31 @@ pfm_from_seed <- function(seqs_or_file, seqs_or_file_bg=NA, seed1="AAA", gapLen=
     return(energy_k)
   }
 
-#### inter-conver of pfm and pwm ##########
+#### inter-conver of pfm and pwm ###
 
-  pfm_to_pwm <-function(pfmMat, normalize=TRUE, pseudoCnt=0)
-    # pwm energy in kT unit
-    # if normalized each pwm col mean to 0
-  {
-    pwmMat= (pfmMat+pseudoCnt) %>% log() %>% `-`
-    if (normalize) pwmMat %<>% sweep(2,colMeans(.),"-")
-    pwmMat
-  }
+pfm_to_pwm <-function(pfmMat, normalize=TRUE, pseudoCnt=0)
+  # pwm energy in kT unit
+  # if normalized each pwm col mean to 0
+{
+  pwmMat= (pfmMat+pseudoCnt) %>% log() %>% `-`
+  if (normalize) pwmMat %<>% sweep(2,colMeans(.),"-")
+  pwmMat
+}
 
-  pwm_to_pfm <-function(pwmMat, normalize=TRUE)
-    # pwm energy in kT unit
-    # if normalized each pfm col sum to 1
-  {
-    pfmMat= (-pwmMat) %>% base::exp()
-    if (normalize) pfmMat %<>% sweep(2,colSums(.),"/")
-    pfmMat
-  }
+pwm_to_pfm <-function(pwmMat, normalize=TRUE)
+  # pwm energy in kT unit
+  # if normalized each pfm col sum to 1
+{
+  pfmMat= (-pwmMat) %>% base::exp()
+  if (normalize) pfmMat %<>% sweep(2,colSums(.),"/")
+  pfmMat
+}
 
   pfm_normalize <-function(pfmMat) pfmMat %>% sweep(2,colSums(.),"/")
   pwm_normalize <-function(pwmMat) pwmMat %>% sweep(2,colMeans(.),"-")
 
 
-### EM-related ###
+#### EM-related ###
 
               nextPfm_calc <- function(kmerV, kcountV, pfmScoreV)
               {
@@ -305,27 +305,10 @@ pfm_from_seed <- function(seqs_or_file, seqs_or_file_bg=NA, seed1="AAA", gapLen=
 
 
 
-  moodsMap<-function(reads,pfm,batch=T,pval=0.001,returnRaw=TRUE,bindingPerLig=FALSE)
-  {
-    # returnRaw: true to return raw result, false to return counts by position
-    # if hope to distinguish monomer form dimer, set bindingPerLig=TRUE
-    selex=SELEXFile("tt");
-    selex$seq=reads %>% Biostrings::DNAStringSet() %>% magrittr::set_names(1:length(reads))
-    selex$moodsMap(pwmFile =pfm, batch = batch, p = pval)
 
-    moods=selex$moodsResult
-    if(returnRaw) return(moods)
-    if(bindingPerLig)
-    {
-      p_load(Biobase)
-      moods %>%mutate(monomer_lig=isUnique(rangeNo)) %>%  group_by(strand,monomer_lig) %>% nest() %>% mutate(data=map(data,~table(.$pos) %>% as.data.frame() %>% set_colnames(c("pos","cnt"))  )) %>% unnest()
-    }else{
-      moods %>% group_by(strand) %>% nest() %>% mutate(data=map(data,~table(.$pos) %>% as.data.frame() %>% set_colnames(c("pos","cnt"))  )) %>% unnest()
-    }
-  }
 
-  # use biostrings to detect dimer consensus
-  dimer_enrichment<-function(seqs,direct=c("ht","hh","tt"),half_pattern="TTGAC", max_mismatch=1,gap=0:20,bk_use_lm_fit=TRUE,bk_sub=TRUE,bk_div=TRUE,bk_div_pseudo=100){
+# use biostrings to detect dimer consensus
+dimer_enrichment<-function(seqs,direct=c("ht","hh","tt"),half_pattern="TTGAC", max_mismatch=1,gap=0:20,bk_use_lm_fit=TRUE,bk_sub=TRUE,bk_div=TRUE,bk_div_pseudo=100){
     library(Biostrings)
     if(bk_sub) {shuffled_seqs= seqs %>% DNAStringSet() %>% shuffle_sequences()} #ctrl_pattern="CAGTT",
     cnt_direction<-function(direct="hh")
@@ -366,35 +349,79 @@ pfm_from_seed <- function(seqs_or_file, seqs_or_file_bg=NA, seed1="AAA", gapLen=
   }
 
 
-
-  get_pfm_hitseqs<-function(seqs, pfm_mat, pval=1e-4, flankAdd=20, one_hit_only=FALSE){
-    # match all sequences to find pfm hits, and get hit sequence with flankings of {flankAdd} bp
-    adj_lens=(nchar(seqs) %>% max)+2*flankAdd
-    seqs_adj=fjComm::length_adjust(seqs, output_length = adj_lens, seq_in_middle = T,use_rand_for_N = T)
-    motif_hits=fjComm::moodsMap(seqs_adj,pfm_mat,T,pval = pval) %>% dplyr::filter(pos>=flankAdd & pos<(adj_lens-flankAdd-ncol(pfm_mat)))
-    if(one_hit_only){duplicated_No=motif_hits$rangeNo %>% {.[duplicated(.)]}; motif_hits %<>% dplyr::filter(!(rangeNo %in% duplicated_No))}
-    starts=motif_hits$pos-flankAdd+1
-    ends=motif_hits$pos+flankAdd+ncol(pfm_mat)
-    hitseqs=str_sub(seqs_adj[motif_hits$rangeNo],starts,ends)
-    hitseqs=ifelse(motif_hits$strand=="+",hitseqs,fjComm::revComp(hitseqs))
-    motif_hits %>% mutate(hitseqs=hitseqs)
+pfm_from_aligned_seqs<-function(hitseqs,pseudo=0){
+  positions=hitseqs[1] %>% nchar
+  hitseqs %<>% str_replace_all("N",stringi::stri_rand_strings(1,1,"[ACGT]"))
+  hit_pfm=matrix(pseudo,nrow = 4,ncol = positions)
+  for (i in 1:ncol(hit_pfm)){
+    hit_pfm[,i]=str_sub(hitseqs,i,i) %>% table() %>% .[qw("A C G T")]
   }
+  hit_pfm %>% replace(is.na(.),pseudo)
+}
 
+.save_tmp_pfmlist<-function(pfmlist,names_=names(pfmlist)){
+  if(is.null(names_)) {names_=seq_along(pfmlist)}
+  tmp_dir=tempfile(); system(glue::glue("mkdir -p {tmp_dir}"))
+  filenames_=map2(pfmlist,names_,function(pfm,name_){filename_=glue::glue("{tmp_dir}/{name_}.pfm"); write_tsv(as.data.frame(pfm),filename_,col_names = F); filename_})
+  filenames_ %>% unlist()
+}
 
+moodsMap<-function(reads,pfm,batch=T,pval=0.001,returnRaw=TRUE,bindingPerLig=FALSE)
+{
+  # returnRaw: true to return raw result, false to return counts by position
+  # if hope to distinguish monomer form dimer, set bindingPerLig=TRUE
+  selex=SELEXFile("tt");
+  selex$seq=reads %>% Biostrings::DNAStringSet() %>% magrittr::set_names(1:length(reads))
+  selex$moodsMap(pwmFile =pfm, batch = batch, p = pval)
 
-  pfm_from_aligned_seqs<-function(hitseqs,pseudo=0){
-    positions=hitseqs[1] %>% nchar
-    hitseqs %<>% str_replace_all("N",stringi::stri_rand_strings(1,1,"[ACGT]"))
-    hit_pfm=matrix(pseudo,nrow = 4,ncol = positions)
-    for (i in 1:ncol(hit_pfm)){
-      hit_pfm[,i]=str_sub(hitseqs,i,i) %>% table() %>% .[qw("A C G T")]
-    }
-    hit_pfm %>% replace(is.na(.),pseudo)
+  moods=selex$moodsResult
+  if(returnRaw) return(moods)
+  if(bindingPerLig)
+  {
+    p_load(Biobase)
+    moods %>%mutate(monomer_lig=isUnique(rangeNo)) %>%  group_by(strand,monomer_lig) %>% nest() %>% mutate(data=map(data,~table(.$pos) %>% as.data.frame() %>% set_colnames(c("pos","cnt"))  )) %>% unnest()
+  }else{
+    moods %>% group_by(strand) %>% nest() %>% mutate(data=map(data,~table(.$pos) %>% as.data.frame() %>% set_colnames(c("pos","cnt"))  )) %>% unnest()
   }
+}
 
-  .save_tmp_pfmlist<-function(pfmlist,names_=names(pfmlist)){
-    if(is.null(names_)) {names_=seq_along(pfmlist)}
-    tmp_dir=tempfile(); system(glue::glue("mkdir -p {tmp_dir}"))
-    filenames_=map2(pfmlist,names_,function(pfm,name_){filename_=glue::glue("{tmp_dir}/{name_}.pfm"); write_tsv(as.data.frame(pfm),filename_,col_names = F); filename_})
-    filenames_ %>% unlist()
+
+dimer_config_from_moods_df<-function(moods_df,gap=0:30)
+{
+  # calc ER IR DR enrichments with spacings from moods result df
+  gap_=gap
+  get_ori<-function(pos,strand){
+    strand_num=ifelse(strand=="-",0,1)
+    order_=pos %>% combn(2)
+    signs_=order_[2,]<order_[1,]
+    ori_=strand_num %>% combn(2) %>% {.[2,]-.[1,]}
+    ori_[signs_]=-ori_[signs_]
+    ori_
   }
+  # select ligands with 2+ hits
+  dimer_hits=moods_df %>% dplyr::filter(rangeNo %in% rangeNo[duplicated(rangeNo)])
+  # calc spacing and orientation for all combinations of 2 hits for each ligand
+  dimer_hits %<>% group_by(rangeNo) %>% reframe(gap=pos %>% combn(2) %>% {abs(.[2,]-.[1,])-motif_len},ori=get_ori(pos,strand)) %>% mutate(ori_=case_when(ori==0 ~ "DR",ori==1~"ER",ori==-1~"IR",.default = "wrong"))
+
+  ER=dimer_hits %>% dplyr::filter(ori_=="ER") %>% {table(.$gap)} %>% .["{gap_}" %>% glue()] %>% {.[is.na(.)]=0;.}
+  DR=dimer_hits %>% dplyr::filter(ori_=="DR") %>% {table(.$gap)} %>% .["{gap_}" %>% glue()] %>% {.[is.na(.)]=0;.}
+  IR=dimer_hits %>% dplyr::filter(ori_=="IR") %>% {table(.$gap)} %>% .["{gap_}" %>% glue()] %>% {.[is.na(.)]=0;.}
+
+  cnt_df=tibble(gap=gap_,DR=DR,ER=ER,IR=IR) %>% pivot_longer(cols = c("DR","ER","IR")) %>% set_colnames(qw("gap ori count"))
+  cnt_df
+}
+
+get_pfm_hitseqs<-function(seqs, pfm_mat, pval=1e-4, flankAdd=20, one_hit_only=FALSE){
+  # match all sequences to find pfm hits, and get hit sequence with flankings of {flankAdd} bp
+  adj_lens=(nchar(seqs) %>% max)+2*flankAdd
+  seqs_adj=fjComm::length_adjust(seqs, output_length = adj_lens, seq_in_middle = T,use_rand_for_N = T)
+  motif_hits=fjComm::moodsMap(seqs_adj,pfm_mat,T,pval = pval) %>% dplyr::filter(pos>=flankAdd & pos<(adj_lens-flankAdd-ncol(pfm_mat)))
+  if(one_hit_only){duplicated_No=motif_hits$rangeNo %>% {.[duplicated(.)]}; motif_hits %<>% dplyr::filter(!(rangeNo %in% duplicated_No))}
+  starts=motif_hits$pos-flankAdd+1
+  ends=motif_hits$pos+flankAdd+ncol(pfm_mat)
+  hitseqs=str_sub(seqs_adj[motif_hits$rangeNo],starts,ends)
+  hitseqs=ifelse(motif_hits$strand=="+",hitseqs,fjComm::revComp(hitseqs))
+  motif_hits %>% mutate(hitseqs=hitseqs)
+}
+
+
