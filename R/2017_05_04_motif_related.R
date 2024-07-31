@@ -308,20 +308,20 @@ pwm_to_pfm <-function(pwmMat, normalize=TRUE)
 
 
 # use biostrings to detect dimer consensus
-dimer_enrichment<-function(seqs,direct=c("ht","hh","tt"),half_pattern="TTGAC", max_mismatch=1,gap=0:20,bk_use_lm_fit=TRUE,bk_sub=TRUE,bk_div=TRUE,bk_div_pseudo=100){
+  dimer_enrichment<-function(seqs,direct=c("DR","IR","ER"), half_pattern1="GTCAA", half_pattern2="GTCAA", max_mismatch=0,gap=0:20,bk_use_lm_fit=TRUE,bk_sub=TRUE,bk_div=TRUE,bk_div_pseudo=50){
     library(Biostrings)
     if(bk_sub) {shuffled_seqs= seqs %>% DNAStringSet() %>% shuffle_sequences()} #ctrl_pattern="CAGTT",
-    cnt_direction<-function(direct="hh")
+    cnt_direction<-function(direct="IR")
     {
       patterns=case_when(
-        direct=="ht" ~ stringr::str_c(half_pattern,strrep("N",gap),half_pattern),
-        direct=="hh" ~ stringr::str_c(half_pattern,strrep("N",gap),half_pattern %>% revComp()),
-        direct=="tt" ~ stringr::str_c(half_pattern %>% revComp(),strrep("N",gap),half_pattern)
+        direct=="DR" ~ stringr::str_c(half_pattern1,strrep("N",gap),half_pattern2),
+        direct=="IR" ~ stringr::str_c(half_pattern1,strrep("N",gap),half_pattern2 %>% revComp()),
+        direct=="ER" ~ stringr::str_c(half_pattern1 %>% revComp(),strrep("N",gap),half_pattern2)
       )
       # ctrl_patterns=case_when(
-      #   direct=="ht" ~ stringr::str_c(ctrl_pattern,strrep("N",gap),ctrl_pattern),
-      #   direct=="hh" ~ stringr::str_c(ctrl_pattern,strrep("N",gap),ctrl_pattern %>% revComp()),
-      #   direct=="tt" ~ stringr::str_c(ctrl_pattern %>% revComp(),strrep("N",gap),ctrl_pattern)
+      #   direct=="DR" ~ stringr::str_c(ctrl_pattern,strrep("N",gap),ctrl_pattern),
+      #   direct=="IR" ~ stringr::str_c(ctrl_pattern,strrep("N",gap),ctrl_pattern %>% revComp()),
+      #   direct=="ER" ~ stringr::str_c(ctrl_pattern %>% revComp(),strrep("N",gap),ctrl_pattern)
       # )
       fg_cnt=vcountPDict(pdict = patterns %>% DNAStringSet(),subject = seqs %>% DNAStringSet(),fixed = "subject",max.mismatch = max_mismatch) %>% rowSums()
       if(bk_sub){
@@ -347,6 +347,8 @@ dimer_enrichment<-function(seqs,direct=c("ht","hh","tt"),half_pattern="TTGAC", m
     }
     parallel(direct,function(x){cnt_direction(direct = x)},workers = 3) %>% set_names(direct) %>% largeListToDf() %>% mutate(gap=gap)
   }
+
+
 
 
 pfm_from_aligned_seqs<-function(hitseqs,pseudo=0){
