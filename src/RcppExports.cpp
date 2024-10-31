@@ -11,6 +11,23 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// score_genome_gkmers_cpp
+SEXP score_genome_gkmers_cpp(std::vector<std::string> seqnames, std::vector<std::string> seqs, IntegerVector starts, std::vector<std::string> target_kmers, NumericVector kmer_scores, int gapmin, int gapmax);
+RcppExport SEXP _fjComm_score_genome_gkmers_cpp(SEXP seqnamesSEXP, SEXP seqsSEXP, SEXP startsSEXP, SEXP target_kmersSEXP, SEXP kmer_scoresSEXP, SEXP gapminSEXP, SEXP gapmaxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type seqnames(seqnamesSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type seqs(seqsSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type starts(startsSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type target_kmers(target_kmersSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type kmer_scores(kmer_scoresSEXP);
+    Rcpp::traits::input_parameter< int >::type gapmin(gapminSEXP);
+    Rcpp::traits::input_parameter< int >::type gapmax(gapmaxSEXP);
+    rcpp_result_gen = Rcpp::wrap(score_genome_gkmers_cpp(seqnames, seqs, starts, target_kmers, kmer_scores, gapmin, gapmax));
+    return rcpp_result_gen;
+END_RCPP
+}
 // getChrScore_scored_k
 Rcpp::NumericVector getChrScore_scored_k(std::vector<std::string> kmers, std::vector<double> scores, std::string chrSeq, int kmerLen);
 RcppExport SEXP _fjComm_getChrScore_scored_k(SEXP kmersSEXP, SEXP scoresSEXP, SEXP chrSeqSEXP, SEXP kmerLenSEXP) {
@@ -34,6 +51,21 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::vector< std::string > >::type topKmers(topKmersSEXP);
     Rcpp::traits::input_parameter< std::string >::type chrSeq(chrSeqSEXP);
     rcpp_result_gen = Rcpp::wrap(getChrScore(topKmers, chrSeq));
+    return rcpp_result_gen;
+END_RCPP
+}
+// getChrScores_scored_k
+Rcpp::NumericVector getChrScores_scored_k(std::vector< std::string > strings, NumericVector score_val, std::vector< std::string > kmer_names, int k, int winsize);
+RcppExport SEXP _fjComm_getChrScores_scored_k(SEXP stringsSEXP, SEXP score_valSEXP, SEXP kmer_namesSEXP, SEXP kSEXP, SEXP winsizeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector< std::string > >::type strings(stringsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type score_val(score_valSEXP);
+    Rcpp::traits::input_parameter< std::vector< std::string > >::type kmer_names(kmer_namesSEXP);
+    Rcpp::traits::input_parameter< int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< int >::type winsize(winsizeSEXP);
+    rcpp_result_gen = Rcpp::wrap(getChrScores_scored_k(strings, score_val, kmer_names, k, winsize));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -159,21 +191,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// getChrScores_scored_k
-Rcpp::NumericVector getChrScores_scored_k(std::vector< std::string > strings, NumericVector score_val, std::vector< std::string > kmer_names, int k, int winsize);
-RcppExport SEXP _fjComm_getChrScores_scored_k(SEXP stringsSEXP, SEXP score_valSEXP, SEXP kmer_namesSEXP, SEXP kSEXP, SEXP winsizeSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::vector< std::string > >::type strings(stringsSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type score_val(score_valSEXP);
-    Rcpp::traits::input_parameter< std::vector< std::string > >::type kmer_names(kmer_namesSEXP);
-    Rcpp::traits::input_parameter< int >::type k(kSEXP);
-    Rcpp::traits::input_parameter< int >::type winsize(winsizeSEXP);
-    rcpp_result_gen = Rcpp::wrap(getChrScores_scored_k(strings, score_val, kmer_names, k, winsize));
-    return rcpp_result_gen;
-END_RCPP
-}
 // matRevComp
 NumericMatrix matRevComp(NumericMatrix seqs);
 RcppExport SEXP _fjComm_matRevComp(SEXP seqsSEXP) {
@@ -216,8 +233,10 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_fjComm_score_genome_gkmers_cpp", (DL_FUNC) &_fjComm_score_genome_gkmers_cpp, 7},
     {"_fjComm_getChrScore_scored_k", (DL_FUNC) &_fjComm_getChrScore_scored_k, 4},
     {"_fjComm_getChrScore", (DL_FUNC) &_fjComm_getChrScore, 2},
+    {"_fjComm_getChrScores_scored_k", (DL_FUNC) &_fjComm_getChrScores_scored_k, 5},
     {"_fjComm_revComp", (DL_FUNC) &_fjComm_revComp, 1},
     {"_fjComm_fast_factor", (DL_FUNC) &_fjComm_fast_factor, 1},
     {"_fjComm_assign_k_to_PWMs", (DL_FUNC) &_fjComm_assign_k_to_PWMs, 4},
@@ -226,7 +245,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_fjComm_kmerCntBit", (DL_FUNC) &_fjComm_kmerCntBit, 7},
     {"_fjComm_gkmerCntBit", (DL_FUNC) &_fjComm_gkmerCntBit, 9},
     {"_fjComm_scoring", (DL_FUNC) &_fjComm_scoring, 9},
-    {"_fjComm_getChrScores_scored_k", (DL_FUNC) &_fjComm_getChrScores_scored_k, 5},
     {"_fjComm_matRevComp", (DL_FUNC) &_fjComm_matRevComp, 1},
     {"_fjComm_pfm_from_seed_notUsed", (DL_FUNC) &_fjComm_pfm_from_seed_notUsed, 7},
     {"_fjComm_seqFregments", (DL_FUNC) &_fjComm_seqFregments, 2},

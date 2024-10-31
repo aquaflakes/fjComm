@@ -58,6 +58,7 @@ Rcpp::IntegerVector getChrScore(std::vector< std::string > topKmers, std::string
 }
 
 
+
 /*** R
 
 */
